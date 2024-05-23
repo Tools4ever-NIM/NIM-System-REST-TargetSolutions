@@ -1,0 +1,336 @@
+{
+  "schema": {
+    "options": {},
+    "crud_objects": {
+      "users": {
+        "operations": {
+          "usersList": {
+            "method": "get",
+            "call": {
+              "path": "/v1/users"
+            },
+            "processing_options": {
+              "output_field": "users"
+            },
+            "query_parameters": {}
+          },
+          "userCreate": {
+            "method": "post",
+            "call": {
+                "mode": "normal",
+                "path": "/v1/sites/{siteid}/users"
+            },
+            "semantics": "create",
+            "resource_allowance_default": "prohibited",
+            "resource_mandatory": [
+                "siteid",
+                "username",
+                "firstname",
+                "password",
+                "lastname",
+                "employeeid"
+            ]
+          },
+          "userUpdate": {
+            "method": "put",
+            "call": {
+                "mode": "normal",
+                "path": "/v1/users/{userid}"
+            },
+            "semantics": "update",
+            "resource_allowance_default": "optional",
+            "resource_prohibited": [
+              "links_credentials",
+              "links_groups",
+              "links_resourcelink",
+              "email_status",
+              "email_link",
+              "email_email",
+              "email_emailid",
+              "siteid"
+            ],
+            "resource_mandatory": [
+                "userid"
+            ]
+          },
+          "userEmailUpdate": {
+            "method": "post",
+            "call": {
+                "mode": "normal",
+                "path": "/v1/users/{userid}"
+            },
+            "body":{
+              "_nim_merge_attributes_": false,
+              "email": "{email_email}"
+            },
+            "semantics": "update",
+            "resource_allowance_default": "prohibited",
+            "resource_mandatory": [
+                "userid",
+                "email_email"
+            ]
+          },
+          "userEmailDelete": {
+            "method": "delete",
+            "call": {
+                "mode": "normal",
+                "path": "/v1/users/{userid}/emails/{emailid}"
+            },
+            "resource_allowance_default": "prohibited",
+            "resource_mandatory": [
+                "userid",
+                "email_id"
+            ]
+          }
+        },
+        "parameters": {},
+        "key": "userid",
+        "resources": {
+          "status": "string*",
+          "employeeid": "string*",
+          "lastname": "string*",
+          "usertype": "string*",
+          "userid": "string*",
+          "links": {
+              "credentials": "_:string",
+              "groups": "_:string",
+              "resourcelink": "_:string"
+          },
+          "username": "string*",
+          "firstname": "string*",
+          "email": [
+              {
+                  "status": "string*",
+                  "link": "string",
+                  "email": "string*",
+                  "emailid": "string*"
+              }
+          ],
+          "siteid": "string*"
+        }
+      },
+      "sites": {
+        "operations": {
+          "sitesList": {
+            "method": "get",
+            "call": {
+              "path": "/v1/sites",
+              "post_processing": "child_tables"
+            },
+            "processing_options": {
+              "output_field": "sites"
+            },
+            "query_parameters": {}
+          }
+        },
+        "parameters": {},
+        "key": "siteid",
+        "resources": {
+          "links":["string"],
+          "sitename":"string*",
+          "loginpage":"string*",
+          "siteid":"string*"
+        }
+      },
+      "site_categories": {
+        "operations": {
+          "site_categoriesList": {
+            "method": "get",
+            "call": {
+              "path": "/v1/sites/categories/profile"
+            },
+            "processing_options": {
+              "output_field": "profilecategories"
+            },
+            "query_parameters": {}
+          }
+        },
+        "parameters": {},
+        "key": "caegoryid",
+        "resources": {
+          "groupcount": "string*",
+            "categoryid": "string*",
+            "links": [
+                {
+                    "groups": "_:string",
+                    "resourcelink": "_:string"
+                }
+            ],
+            "allowmultiple": "string*",
+            "lastupdated": "string*",
+            "categoryname": "string*",
+            "siteid": "string*",
+            "userfillin": "string*"
+        }
+      },
+      "site_groups": {
+        "operations": {
+          "site_groupsList": {
+            "method": "get",
+            "call": {
+              "table": "sites",
+              "mode": "iteration",
+              "iterator": "siteid",
+              "path": "/v1/sites/{iterator}/access/groups",
+              "post_processing": "child_tables"
+            },
+            "processing_options": {
+              "output_field": "groups"
+            },
+            "query_parameters": {},
+            "maxSessionCount": 20
+          }
+        },
+        "parameters": {},
+        "key": "groupid",
+        "resources": {
+          "groupcount": "string*",
+          "links":{
+            "users":"_:string",
+            "resourcelink":"_:string"
+          },
+          "usercount":"string*",
+          "groupid":"string*",
+          "siteid":"string*",
+          "categoryid":"string*",
+          "groupname":"string*"
+        }
+      },
+      "users_groups": {
+        "operations": {
+          "users_groupsList": {
+            "method": "get",
+            "call": {
+              "mode": "iteration",
+              "table": "site_groups",
+              "iterator": "groupid",
+              "iterator_columns": [
+                "categoryid"
+              ],
+              "path": "/v1/sites/categories/profile/{categoryid}/groups/{iterator}/users",
+              "base": {
+                "groupid": "{iterator}"
+              }
+            },
+            "processing_options": {
+              "output_field": "users"
+            },
+            "query_parameters": {},
+            "maxSessionCount": 20
+          },
+          "users_groupsAdd": {
+            "method": "post",
+            "call": {
+                "mode": "normal",
+                "path": "/v1/sites/{siteid}/categories/profile/{categoryid}/groups/{groupid}/users"
+            },
+            "query_parameters": {},
+            "body":{
+                "_nim_merge_attributes_": false,
+                "userid": "{userid}"
+            },
+            "semantics": "create",
+            "resource_allowance_default": "prohibited",
+            "resource_mandatory": [
+                "userid",
+                "groupid",
+                "categoryid",
+                "siteid"
+            ]
+        },
+        "users_groupsRemove": {
+            "method": "delete",
+            "call": {
+                "mode": "normal",
+                "path": "/v1/users/{userid}/access/groups/{groupid}"
+            },
+            "query_parameters": {},
+            "resource_allowance_default": "prohibited",
+            "resource_mandatory": [
+                "userid",
+                "groupid"
+            ]
+        }
+        },
+        "parameters": {},
+        "groupmembership": {
+          "add_operation": "users_groupsAdd",
+          "remove_operation": "users_groupsRemove",
+          "member_table": "users",
+          "group_table": "site_groups",
+          "member_attributes": {
+              "userid": "userid"
+          },
+          "group_attributes": {
+              "groupid": "groupid"
+          }
+      },
+        "resources": {
+          "userid": "string*",
+          "groupid":"string*"
+        }
+      }
+    }
+  },
+  "rest": {
+    "config": {
+      "baseUrl": "https://{tenant_id}",
+      "get": {
+        "query_parameters": {
+        },
+        "pagination": {
+          "mode": "skip_take",
+          "path":[],
+          "page_size":"{page_size}",
+          "params":{
+              "limit":"{take_count}",
+              "startrow":"{skip_count}"
+          }
+        }
+      },
+      "authentication": "aeries",
+      "call_handling": "generic",
+      "test_connection": {
+        "url": "/v1/users?limit=1&startrow=0"
+      },
+      "socket_timeout": 3600000,
+      "accept": "application/json",
+      "headers": {
+        "AccessToken": "{client_secret}"
+      },
+      "retry": [
+        {
+          "type": "statusCode",
+          "statusCode": 429,
+          "retry": {
+            "type": "simple",
+            "maxCount": 6,
+            "waitTime": 10
+          }
+        },
+        {
+          "type": "statusCode",
+          "statusCode": 500,
+          "retry": {
+            "type": "simple",
+            "maxCount": 6,
+            "waitTime": 10
+          }
+        },
+        {
+          "type": "connectionError"
+        }
+      ]
+    }       
+  },
+  "connection": {
+    "items": [
+      {
+        "name": "page_size",
+        "type": "textbox",
+        "label": "Page Size:",
+        "value": "1000"
+      }
+    ]
+  }
+}
