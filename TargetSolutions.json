@@ -267,7 +267,9 @@
       },
         "resources": {
           "userid": "string*",
-          "groupid":"string*"
+          "groupid":"string*",
+          "categoryid":"string*",
+          "siteid":"string*"
         }
       }
     }
