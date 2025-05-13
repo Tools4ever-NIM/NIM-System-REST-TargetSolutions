@@ -1,6 +1,5 @@
 {
   "schema": {
-    "options": {},
     "crud_objects": {
       "users": {
         "operations": {
@@ -11,8 +10,7 @@
             },
             "processing_options": {
               "output_field": "users"
-            },
-            "query_parameters": {}
+            }
           },
           "userCreate": {
             "method": "post",
@@ -83,7 +81,6 @@
             ]
           }
         },
-        "parameters": {},
         "key": "userid",
         "resources": {
           "status": "string*",
@@ -119,11 +116,9 @@
             },
             "processing_options": {
               "output_field": "sites"
-            },
-            "query_parameters": {}
+            }
           }
         },
-        "parameters": {},
         "key": "siteid",
         "resources": {
           "links":["string"],
@@ -141,11 +136,9 @@
             },
             "processing_options": {
               "output_field": "profilecategories"
-            },
-            "query_parameters": {}
+            }
           }
         },
-        "parameters": {},
         "key": "categoryid",
         "resources": {
           "groupcount": "string*",
@@ -177,11 +170,9 @@
             "processing_options": {
               "output_field": "groups"
             },
-            "query_parameters": {},
             "maxSessionCount": 20
           }
         },
-        "parameters": {},
         "key": "groupid",
         "resources": {
           "groupcount": "string*",
@@ -205,17 +196,18 @@
               "table": "site_groups",
               "iterator": "groupid",
               "iterator_columns": [
-                "categoryid"
+                "categoryid","groupname"
               ],
               "path": "/v1/sites/categories/profile/{categoryid}/groups/{iterator}/users",
               "base": {
-                "groupid": "{iterator}"
+                "groupid": "{iterator}",
+                "categoryid": "{categoryid}",
+                "groupname": "{groupname}"
               }
             },
             "processing_options": {
               "output_field": "users"
             },
-            "query_parameters": {},
             "maxSessionCount": 20
           },
           "users_groupsAdd": {
@@ -224,7 +216,6 @@
                 "mode": "normal",
                 "path": "/v1/sites/{siteid}/categories/profile/{categoryid}/groups/{groupid}/users"
             },
-            "query_parameters": {},
             "body":{
                 "_nim_merge_attributes_": false,
                 "userid": "{userid}"
@@ -244,7 +235,6 @@
                 "mode": "normal",
                 "path": "/v1/users/{userid}/access/groups/{groupid}"
             },
-            "query_parameters": {},
             "resource_allowance_default": "prohibited",
             "resource_mandatory": [
                 "userid",
@@ -252,7 +242,6 @@
             ]
         }
         },
-        "parameters": {},
         "groupmembership": {
           "add_operation": "users_groupsAdd",
           "remove_operation": "users_groupsRemove",
@@ -268,8 +257,9 @@
         "resources": {
           "userid": "string*",
           "groupid":"string*",
-          "categoryid":"string*",
-          "siteid":"string*"
+          "categoryid":"_nim*",
+          "siteid":"string*",
+          "groupname": "_nim*"
         }
       }
     }
@@ -278,11 +268,8 @@
     "config": {
       "baseUrl": "https://{tenant_id}",
       "get": {
-        "query_parameters": {
-        },
         "pagination": {
           "mode": "skip_take",
-          "path":[],
           "page_size":"{page_size}",
           "params":{
               "limit":"{take_count}",
