@@ -242,7 +242,7 @@
             "method": "delete",
             "call": {
                 "mode": "normal",
-                "path": "/v1/users/{userid}/access/groups/{groupid}"
+                "path": "/v1/users/{userid}/groups/{groupid}"
             },
             "query_parameters": {},
             "resource_allowance_default": "prohibited",
